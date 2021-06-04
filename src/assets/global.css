@@ -1,0 +1,11 @@
+body {
+    background-color: white;
+}
+
+.el-upload-dragger { 
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    display: flex;
+    align-items: center;
+  }
