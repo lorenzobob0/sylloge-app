@@ -11,7 +11,7 @@
           <i class="el-icon-circle-check"></i>
           <template #title>Save</template>
         </el-menu-item>
-        <el-menu-item @click="">
+        <el-menu-item>
           <i class="el-icon-delete" @click="deleteRecord"></i>
           <template #title>Delete</template>
         </el-menu-item>

@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+
 module.exports = {
     mode: 'development',
     devtool: 'eval-cheap-module-source-map',
@@ -34,20 +35,13 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                    },
-                    // 'vue-style-loader',
+                    'vue-style-loader',
                     'css-loader'
-                ],
-            }, {
+                ]
+            },
+            {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: {
-                    loaders: {
-                    }
-                    // other vue-loader options go here
-                }
             },
             {
                 test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
@@ -62,10 +56,19 @@ module.exports = {
                 ]
             },
             {
+                test: /\.mjs$/i,
+                resolve: { byDependency: { esm: { fullySpecified: false } } }
+            },
+            {
                 test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
-                // exclude: '../deamoneta-live-auction-media-admin/node_modules/'
+                exclude: /(node_modules)/,
+                use: {
+                    // you forgot to set the `loader` property
+                    loader: 'babel-loader',
+                    options: {
+                      presets: ['@babel/preset-env'],
+                    },
+                  },
             },
             {
                 test: /\.(png|jpg|gif|svg|mp3)$/,
@@ -74,6 +77,12 @@ module.exports = {
                     name: '[name].[ext]?[hash]'
                 }
             }
+            /*,
+            {
+                test: /\.mjs$/i,
+                resolve: { byDependency: { esm: { fullySpecified: false } } }
+            }
+            */
         ]
     },
     plugins: [

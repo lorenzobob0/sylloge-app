@@ -5,10 +5,14 @@
         <el-input placeholder="Search your coins" v-model="searchTerms" ></el-input>
       </el-col>
       <el-col :span="4">
-        <el-button type="primary" icon="el-icon-search" @click="updateFilter">Search</el-button>  
+        <el-button type="primary" @click="updateFilter">
+          <el-icon><search /></el-icon>  &nbsp;&nbsp; Search 
+        </el-button>  
       </el-col>
       <el-col :span="2">
-        <el-button type="success" icon="el-icon-plus" @click="addNewItem"></el-button>  
+        <el-button type="success" @click="addNewItem">
+          <el-icon><plus /></el-icon>
+        </el-button>  
       </el-col>
     </el-row>
     <div class="pagination-holder">
@@ -42,11 +46,13 @@
 <script>
 import ModelsAPI from './Models.js'
 import CoinRowView from './CoinRowView.vue'
+import { Plus, Search } from '@element-plus/icons-vue'
 
 export default {
   name: 'CoinsView',
   components: {
-    'coin-row-view': CoinRowView
+    'coin-row-view': CoinRowView,
+    Plus,  Search
   },
   data () {
     return {
@@ -75,7 +81,7 @@ export default {
     },
     async fetchCoins () {
       const self = this
-      let globalDB = await ModelsAPI.initDB()
+      let globalDB = await ModelsAPI.initDB(ModelsAPI)
 
       /*
       var myPopup = $ionicPopup.show({
@@ -110,6 +116,7 @@ export default {
           return ModelsAPI.coinToString(c).toLowerCase().indexOf(self.searchTerms.toLowerCase()) > -1
         })
       }
+
       let keys = []
       for (let i = 0; i < filteredCoins.length; i++) {
         keys.push(filteredCoins[i]._id)
@@ -126,6 +133,7 @@ export default {
         keys: keys.splice((self.pagination.curPage-1) * self.rpp, Math.min(keys.length, (self.pagination.curPage) * self.rpp)),
         attachments: false,
       })
+
       for (let i = 0; i < allCoins.rows.length; i++) {
         let c = allCoins.rows[i].doc
         if (typeof c._attachments !== 'undefined') {
@@ -142,11 +150,12 @@ export default {
         }
       }
       self.coins = allCoins.rows
+      console.log(self.coins)
     },
     initComponent () {
       const self = this
       self.rpp = parseInt(localStorage.getItem('pagination_resultsPerPage'));
-      if (self.rpp == 0 || self.rpp == null || self.rpp == undefined || self.rpp == 'undefined') {
+      if (self.rpp == 0 || self.rpp == null || self.rpp == undefined || self.rpp == 'undefined' || isNaN(self.rpp)) {
         self.rpp = 20;
         localStorage.setItem('pagination_resultsPerPage', self.rpp);
       }

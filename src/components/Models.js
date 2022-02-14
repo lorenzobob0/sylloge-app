@@ -17,7 +17,8 @@ var ChatMessage;
 var RosterContact;
 var rosterInstance;
 let globalDB = null;
-const DBNAME = 'sylloge_db-225632'; // async_list(Coin)
+
+let DBNAME = 'sylloge_db-225632'; // async_list(Coin)
 
 function async_list(entity) {
   return new Promise(function (resolve, reject) {
@@ -48,27 +49,35 @@ let hexEncode = function (str) {
   return result;
 }; // Spostare in un componente
 
+function __is_def(f) {
+  return (f != '' && typeof f !== 'undefined')
+}
 
 function coinToString(coin) {
   var d = '';
   if (coin.ruler != '' && coin.ruler != null) d += ' ' + coin.ruler + '.';
   d += coin.coinType + '.';
-  if (coin.mint != '') d += ' ' + coin.mint + '.';
-  if (coin.obverse != '') d += ' Obv: ' + coin.obverse + '.';
-  if (coin.reverse != '') d += ' Rev: ' + coin.reverse + '.';
-  if (coin.biblio != '') d += ' ' + coin.biblio + '.';
-  if (coin.metal != '') d += ' ' + coin.metal + '.';
-  if (coin.weight != '') d += ' ' + coin.weight + '.';
-  if (coin.diameter != '') d += ' ' + coin.diameter + '.';
-  if (coin.notes != '') d += ' ' + coin.notes + '.';
-  if (coin.price != '') d += ' ' + coin.price + '.';
+  if (__is_def(coin.mint)) d += ' ' + coin.mint + '.';
+  if (__is_def(coin.obverse)) d += ' Obv: ' + coin.obverse + '.';
+  if (__is_def(coin.reverse)) d += ' Rev: ' + coin.reverse + '.';
+  if (__is_def(coin.biblio)) d += ' ' + coin.biblio + '.';
+  if (__is_def(coin.metal)) d += ' ' + coin.metal + '.';
+  if (__is_def(coin.weight)) d += ' ' + coin.weight + '.';
+  if (__is_def(coin.diameter)) d += ' ' + coin.diameter + '.';
+  if (__is_def(coin.notes)) d += ' ' + coin.notes + '.';
+  if (__is_def(coin.price)) d += ' ' + coin.price + '.';
   return d.trim();
 }
 
 let syncHandler = null;
 
+function connectionURL(username, password) {
+  const remoteURL = 'https://' + encodeURIComponent(username.toLowerCase()) + ':' + encodeURIComponent(password) + '@sylloge-app.com/db/userdb-' + hexEncode(username.toLowerCase())
+  return remoteURL
+}
+
 function enableSync(username, password, handlers = {}) {
-  const remoteURL = 'https://' + encodeURIComponent(username.toLowerCase()) + ':' + encodeURIComponent(password) + '@sylloge-app.com/db/userdb-' + hexEncode(username.toLowerCase());
+  const remoteURL = 'https://' + encodeURIComponent(username.toLowerCase()) + ':' + encodeURIComponent(password) + '@sylloge-app.com/db/userdb-' + hexEncode(username.toLowerCase())
   syncHandler = PouchDB.sync(DBNAME, remoteURL, {
     live: true,
     retry: true,
@@ -134,11 +143,15 @@ async function destroyDB () {
   globalDB = null
 }
 
-async function initDB() {
-    if (globalDB != null) {
-        return globalDB;
-    }
+async function initDB(dbname = null) {
+  if (globalDB != null) {
+      return globalDB;
+  }
+  if (dbname == null) {
+    throw 'dbname can not be null'
+  }
   let db = null;
+  DBNAME = dbname
   db = new PouchDB(DBNAME);
   globalDB = db
 
@@ -1158,11 +1171,12 @@ function syncChats(bucket) {
 }
 
 export default {
-    enableSync: enableSync,
-    coinToString: coinToString, 
-    setupModels: setupModels,
-    initDB: initDB,
-    destroyDB: destroyDB,
-    migrate2Pouch: migrate2Pouch,
-    createUUID: createUUID
+  connectionURL: connectionURL,
+  enableSync: enableSync,
+  coinToString: coinToString, 
+  setupModels: setupModels,
+  initDB: initDB,
+  destroyDB: destroyDB,
+  migrate2Pouch: migrate2Pouch,
+  createUUID: createUUID
 }
