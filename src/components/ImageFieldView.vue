@@ -9,12 +9,12 @@
       :before-upload="updateImg"
     >
       <img class="img" v-if="img" :src="img" />
-      <i v-else class="el-icon-plus img-uploader-icon"></i>
+      <el-icon><plus /></el-icon>
     </el-upload>
     <div>
-      <el-button type="info" icon="el-icon-view" @click="imageViewerVisible = true" />
-      <el-button type="info" icon="el-icon-download" @click="downloadAsFile()" />
-      <el-button type="danger" icon="el-icon-delete" @click="deleteImage()" />
+      <el-button type="info" :icon="View" @click="imageViewerVisible = true"><el-icon><view-icon /></el-icon></el-button>
+      <el-button type="info" :icon="Download" @click="downloadAsFile()"><el-icon><download /></el-icon></el-button>
+      <el-button type="danger" @click="deleteImage()"><el-icon><delete /></el-icon></el-button>
     </div>
 
     <el-dialog
@@ -29,9 +29,13 @@
 <script>
 import ModelsAPI from './Models.js'
 import ImageTools from './ImageTools.js'
+import { Download, View, Delete, Plus} from '@element-plus/icons-vue'
 
 export default {
   name: 'ImageFieldView',
+  components: {
+    'view-icon':View, Download, Delete, Plus
+  },
   props: {
     img: String
   },

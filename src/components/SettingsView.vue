@@ -4,6 +4,24 @@
     <p>
       <el-button @click="destroyLocal" type="danger">Destroy local data</el-button>
       <el-button @click="legacySync" type="danger">Import Sylloge legacy data from cloud</el-button>
+
+      <el-button @click="exportData" type="danger">Export data</el-button>
+
+      <el-upload
+        :show-file-list="false"
+        :on-success="importData"
+        :auto-upload="true"
+        :before-upload="importData"
+      >
+        <el-button type="primary">Load backup</el-button>
+        <template #tip>
+          <div class="el-upload__tip">
+            .db files (JSON), previously exported from this app
+          </div>
+        </template>
+      </el-upload>
+
+      <el-button @click="importData" type="danger">Import data</el-button>
     </p>
   </div>
 </template>
@@ -40,7 +58,51 @@ export default {
         alert('Import complete')
         loading.close()
       }
+    },
+
+    async importData (file) {
+      let globalDB = await ModelsAPI.initDB()
+      
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = ({target: {result}}) => {
+          globalDB.bulkDocs(
+            JSON.parse(result),
+            {new_edits: false}, // not change revision
+            (...args) => console.log('DONE', args)
+          )
+        }
+        reader.readAsText(file)
+      }
+    },
+
+    async exportData() {
+      let globalDB = await ModelsAPI.initDB()
+      let doc = await globalDB.allDocs({include_docs: true, attachments: true})
+      this.download(
+            JSON.stringify(doc.rows.map(({doc}) => doc)),
+            'export.db',
+            'text/plain'
+      )
+    },
+
+    download(data, filename, type) {
+      var file = new Blob([data], {type: type})
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename)
+      else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file)
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        setTimeout(function() {
+            document.body.removeChild(a)
+            window.URL.revokeObjectURL(url)
+        }, 0)
     }
+}
     
     
   }

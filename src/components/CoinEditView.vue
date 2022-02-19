@@ -3,16 +3,16 @@
     <div id="side-tools">
       <el-menu :collapse="true">
         <el-menu-item  @click="goBack()">
-          <i class="el-icon-arrow-left"></i>
+          <el-icon><arrow-left /></el-icon>
           <template #title>Go back</template>
         </el-menu-item>
         
         <el-menu-item  @click="saveData()">
-          <i class="el-icon-circle-check"></i>
+          <el-icon><circle-check /></el-icon>
           <template #title>Save</template>
         </el-menu-item>
-        <el-menu-item @click="">
-          <i class="el-icon-delete" @click="deleteRecord"></i>
+        <el-menu-item @click="deleteRecord">
+          <el-icon><delete /></el-icon>
           <template #title>Delete</template>
         </el-menu-item>
       </el-menu>
@@ -55,7 +55,7 @@
       <el-input @change="markDirty()" placeholder="Weight" v-model="coin.weight"></el-input>
       <el-input @change="markDirty()" placeholder="Metal" v-model="coin.metal"></el-input>
       <el-input @change="markDirty()" placeholder="Notes" type="textarea" v-model="coin.notes"></el-input>
-      <el-input @change="markDirty()" placeholder="Price & Provenance" v-model="coin.price"></el-input>
+      <el-input @change="markDirty()" placeholder="Price &amp; Provenance" v-model="coin.price"></el-input>
       <el-input @change="markDirty()" placeholder="Code" v-model="coin.code"></el-input>
 
       <el-select v-model="belongToAlbums" multiple placeholder="Albums">
@@ -80,11 +80,13 @@
 import ModelsAPI from './Models.js'
 import ImageTools from './ImageTools.js'
 import ImageFieldView from './ImageFieldView.vue'
+import { Delete, ArrowLeft, CircleCheck } from '@element-plus/icons-vue'
 
 export default {
   name: 'CoinEditView',
   components: {
-    'image-field-view': ImageFieldView
+    'image-field-view': ImageFieldView,
+    Delete, ArrowLeft, CircleCheck
   },
   props: [
     'id'
