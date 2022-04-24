@@ -46,11 +46,13 @@ const routes = [
     name: 'not-found', 
     component: NotFoundComponent 
   },
+  /*
   {
     path: '/login',
     name: 'Login',
     component: LoginComponent
   }
+  */
 ]
 
 const router = createRouter({
@@ -59,9 +61,11 @@ const router = createRouter({
   routes,
 })
 
+/*
 router.beforeEach((to, from, next) => {
   if (to.name !== 'Login' && !router.isAuthenticated) next({ name: 'Login' })
   else next()
 })
+*/
 
-export default router;
+export default router

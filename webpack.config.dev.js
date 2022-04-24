@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+console.log(JSON.stringify(require("./package.json").version))
 
 module.exports = {
     mode: 'development',
@@ -94,7 +95,8 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             __VUE_OPTIONS_API__: true,
-            __VUE_PROD_DEVTOOLS__: false
+            __VUE_PROD_DEVTOOLS__: false,
+            VERSION: JSON.stringify(require("./package.json").version)
         }),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({

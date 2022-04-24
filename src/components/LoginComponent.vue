@@ -8,12 +8,17 @@
               <span>{{ db.name }}</span>
             </div>
           </template>
-          <el-icon><magic-stick/></el-icon> ms
-          <el-button type="success" @click="openDB(db)">Open</el-button>
-          <el-button type="danger" @click="deleteDB(db)">Delete</el-button>
+          <el-button type="success" @click="openDB(db)">
+            <el-icon><folder-opened /></el-icon> &nbsp; Open
+          </el-button>
+          <el-button type="danger" @click="deleteDB(db)">
+            <el-icon><delete /></el-icon>&nbsp; Delete
+          </el-button>
         </el-card>
       </div>  
-    <el-button type="success" @click="createDB">New Database</el-button>
+    <el-button type="success" @click="createDB">
+      <el-icon><document-add /></el-icon>
+      &nbsp; New Database</el-button>
   </div>
 </template>
 
@@ -21,10 +26,14 @@
 import axios from 'axios'
 import Models from './Models'
 import localforage from 'localforage'
-
+import { Delete, FolderOpened, DocumentAdd } from '@element-plus/icons-vue'
+import vex from 'vex-js'
 
 export default {
   name: 'LoginComponent',
+  components: {
+    Delete, FolderOpened, DocumentAdd
+  },
   data: function () {
     return {
       databases: []
@@ -35,38 +44,51 @@ export default {
       const self = this
       Models.initDB(db.id)
       self.$router.isAuthenticated = true
-      alert(self.$router.isAuthenticated)
       self.$router.push('/coins')
     },
-    deleteDB: function (db) {
+    deleteDB: async function (db) {
       const self = this
-      if (confirm('Do you really want to delete the database?')) {
-        Models.initDB(db.id)
-        Models.destroyDB()
-        self.$router.isAuthenticated = false
+      let res = await vex.dialog.confirm({
+        message: 'Do you really want to delete the database?',
+        callback: function (value) {
+            if (value) {
+              Models.initDB(db.id)
+              Models.destroyDB()
+              self.$router.isAuthenticated = false
 
-        let idx = 0
-        for (idx = 0; idx < self.databases.length; idx++) {
-          if (self.databases[idx].id == db.id) {
-            break
-          }
+              let idx = 0
+              for (idx = 0; idx < self.databases.length; idx++) {
+                if (self.databases[idx].id == db.id) {
+                  break
+                }
+              }
+              if (idx < self.databases.length) {
+                self.databases.splice(idx, 1)
+              }
+              localforage.setItem('local_dbs', JSON.stringify(self.databases))
+            } else {
+                // no
+            }
         }
-        if (idx < self.databases.length) {
-          self.databases.splice(idx, 1)
-        }
-        localforage.setItem('local_dbs', JSON.stringify(self.databases))
-      }
+      })
     },
     createDB: async function () {
       const self = this
       if (self.databases == null) {
         self.databases = []
       }
-      self.databases.push({
-        'id': Models.createUUID(),
-        'name': prompt('Please give a name to the DB')
+      vex.dialog.prompt({
+        message: 'Please give a name to the DB?',
+        placeholder: 'DB Name',
+        callback: async function (value) {
+          self.databases.push({
+            'id': Models.createUUID(),
+            'name': value
+          })
+          await localforage.setItem('local_dbs', JSON.stringify(self.databases))
+        }
       })
-      await localforage.setItem('local_dbs', JSON.stringify(self.databases))
+
       
     },
     login: async function () {

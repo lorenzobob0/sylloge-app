@@ -1,22 +1,16 @@
 <template>
   <div>
-    <div id="side-tools">
-      <el-menu :collapse="true">
-        <el-menu-item  @click="goBack()">
-          <el-icon><arrow-left /></el-icon>
-          <template #title>Go back</template>
-        </el-menu-item>
-        
-        <el-menu-item  @click="saveData()">
-          <el-icon><circle-check /></el-icon>
-          <template #title>Save</template>
-        </el-menu-item>
-        <el-menu-item @click="deleteRecord">
-          <el-icon><delete /></el-icon>
-          <template #title>Delete</template>
-        </el-menu-item>
-      </el-menu>
+    <div id="buttonbar-affix-bottom">
+      <el-button type="success" round @click="saveData">
+        <el-icon><circle-check /></el-icon>
+        <template #title>Save</template>
+      </el-button>
+      <el-button type="danger" round @click="deleteRecord">
+        <el-icon><delete /></el-icon>
+        <template #title>Delete</template>
+      </el-button>            
     </div>
+    <sylloge-menu :homeIndex="'2'" />
     <div id="main-page">
       <el-row>
         <el-col id="row-imgs" :span="12">
@@ -81,11 +75,14 @@ import ModelsAPI from './Models.js'
 import ImageTools from './ImageTools.js'
 import ImageFieldView from './ImageFieldView.vue'
 import { Delete, ArrowLeft, CircleCheck } from '@element-plus/icons-vue'
+import SylllogeMenu from './SylllogeMenu.vue'
+
 
 export default {
   name: 'CoinEditView',
   components: {
     'image-field-view': ImageFieldView,
+    'sylloge-menu': SylllogeMenu,
     Delete, ArrowLeft, CircleCheck
   },
   props: [
@@ -315,15 +312,7 @@ export default {
 </script>
 
 <style scoped>
-#side-tools {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 60px;
-}
-#main-page {
-  margin-left: 60px;
-}
+
 
 .coin-desc {
   text-align: left;
@@ -332,5 +321,16 @@ export default {
 
 #row-imgs {
   padding-bottom: 5px;
+}
+
+#buttonbar-affix-bottom {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9999;
+
+  text-align: right;
+  padding: 20px;
 }
 </style>

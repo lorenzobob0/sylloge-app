@@ -1,5 +1,6 @@
 <template>
   <div class="albums">
+    <sylloge-menu :homeIndex="'3'" />
     <el-row>
       <el-col :span="18">
         <el-input placeholder="Search albums" v-model="searchTerms" ></el-input>
@@ -25,12 +26,14 @@
 import ModelsAPI from './Models.js'
 import AlbumRowView from './AlbumRowView.vue'
 import { VueDraggableNext } from 'vue-draggable-next'
+import SylllogeMenu from './SylllogeMenu.vue'
 
 export default {
   name: 'AlbumsView',
   components: {
     'album-row-view': AlbumRowView,
-    'draggable': VueDraggableNext
+    'draggable': VueDraggableNext,
+    'sylloge-menu': SylllogeMenu,
   },
   data () {
     return {

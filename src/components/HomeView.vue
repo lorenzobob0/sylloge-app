@@ -1,17 +1,30 @@
 <template>
-  <div class="hello">
-    <h1>Welcome to Sylloge v.2 ALPHA</h1>
+  <div class="home">
+    <sylloge-menu :homeIndex="'1'" />
+    <h1>Welcome to Sylloge version {{version}}</h1>
     <p>
-      This is a work-in-progress rewrite of SyllogeApp for the browser and mobile devices.
+      This is a work-in-progress rewrite and enhancement of 
+      SyllogeApp for desktops and mobile devices.
     </p>
   </div>
 </template>
 
 <script>
+import SylllogeMenu from './SylllogeMenu.vue'
+
+
 export default {
   name: 'HomeView',
+  components: {
+    'sylloge-menu': SylllogeMenu
+  },
   props: {
     msg: String
+  }, 
+  data: function () {
+    return {
+      version: VERSION
+    }
   }
 }
 </script>

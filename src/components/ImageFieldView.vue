@@ -7,13 +7,15 @@
       :on-success="updateImg"
       :auto-upload="true"
       :before-upload="updateImg"
+      :action="'none'"
     >
-      <img class="img" v-if="img" :src="img" />
-      <el-icon><plus /></el-icon>
+
+        <img class="img" v-if="img" :src="img" />
+        <el-icon v-if="!img" style="width:200px !important; height: 200px !important"><plus /></el-icon>
     </el-upload>
     <div>
-      <el-button type="info" :icon="View" @click="imageViewerVisible = true"><el-icon><view-icon /></el-icon></el-button>
-      <el-button type="info" :icon="Download" @click="downloadAsFile()"><el-icon><download /></el-icon></el-button>
+      <el-button type="info" @click="imageViewerVisible = true"><el-icon><view-icon /></el-icon></el-button>
+      <el-button type="info" @click="downloadAsFile()"><el-icon><download /></el-icon></el-button>
       <el-button type="danger" @click="deleteImage()"><el-icon><delete /></el-icon></el-button>
     </div>
 

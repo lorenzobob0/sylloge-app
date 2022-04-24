@@ -1,31 +1,24 @@
 <template>
-  <div class="hello">
-    <el-row>
+  <div class="hello"> 
+    <el-affix position="top" :offset="0">
+      <sylloge-menu :homeIndex="'2'" />
+    </el-affix>
+    <el-row id="search-coins">
       <el-col :span="18">
-        <el-input placeholder="Search your coins" v-model="searchTerms" ></el-input>
+        <el-input placeholder="Search your coins" v-model="searchTerms" @change="updateFilter" ></el-input>
       </el-col>
-      <el-col :span="4">
-        <el-button type="primary" @click="updateFilter">
-          <el-icon><search /></el-icon>  &nbsp;&nbsp; Search 
-        </el-button>  
+      <el-col :span="1">
       </el-col>
-      <el-col :span="2">
-        <el-button type="success" @click="addNewItem">
-          <el-icon><plus /></el-icon>
+      <el-col :span="5">
+        <el-button type="success" @click="addNewItem" style="width:100%">
+          <el-icon><plus /></el-icon> <span class="hidden-xs-only" >&nbsp;&nbsp; New coin </span>
         </el-button>  
       </el-col>
     </el-row>
-    <div class="pagination-holder">
-      <el-pagination background
-        layout="total, sizes, prev, pager, next"
-        :total="pagination.totalResults" 
-        :current-page="pagination.curPage"
-        :page-sizes="[20, 50, 100, 200]"
-        :page-size="rpp"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentPageChange" ></el-pagination>
-    </div>
+    
     <coin-row-view v-for="coin in coins" :key="coin.id" :coin="coin" @click="editCoin(coin)"></coin-row-view>
+    
+    <el-empty v-if="pagination.totalResults == 0" description="No results" />
     
     
     <div class="pagination-holder">
@@ -40,6 +33,8 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentPageChange" ></el-pagination>
     </div>
+
+    
   </div>
 </template>
 
@@ -47,11 +42,13 @@
 import ModelsAPI from './Models.js'
 import CoinRowView from './CoinRowView.vue'
 import { Plus, Search } from '@element-plus/icons-vue'
+import SylllogeMenu from './SylllogeMenu.vue'
 
 export default {
   name: 'CoinsView',
   components: {
     'coin-row-view': CoinRowView,
+    'sylloge-menu': SylllogeMenu,
     Plus,  Search
   },
   data () {
@@ -124,8 +121,8 @@ export default {
 
 
       // Pagina
-      self.pagination.totalResults = allCoins.docs.length;
-      self.pagination.numPages = Math.ceil(self.pagination.totalResults / self.rpp);
+      self.pagination.totalResults = keys.length
+      self.pagination.numPages = Math.ceil(self.pagination.totalResults / self.rpp)
 
 
       allCoins = await globalDB.allDocs({
@@ -180,7 +177,9 @@ export default {
       let c = {
         type: 'Coin',
         creationDate: new Date(),
-        coinType: 'New entry'
+        coinType: 'New entry',
+        mint: '',
+        ruler: ''
       }
 
       try {
@@ -200,5 +199,8 @@ export default {
 .pagination-holder {
   margin-top: 10px;
   margin-bottom:  10px;
+}
+#search-coins {
+  padding: 10px;
 }
 </style>

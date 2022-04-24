@@ -1,11 +1,13 @@
 {
   "name": "sylloge-app-2",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
+  "main": "electron.js",
   "scripts": {
     "build": "webpack --config webpack.config.dev.js",
     "dev": "webpack serve --hot --config webpack.config.dev.js",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "electron": "webpack --config webpack.config.dev.js && electron ."
   },
   "dependencies": {
     "@element-plus/icons-vue": "^0.2.7",
@@ -16,12 +18,16 @@
     "moment": "^2.29.1",
     "pouchdb": "^7.2.2",
     "pouchdb-find": "^7.2.2",
+    "update-electron-app": "^2.0.1",
+    "vex-dialog": "^1.1.0",
+    "vex-js": "^4.1.0",
     "vue": "^3.2.30",
     "vue-draggable-next": "^2.0.1",
     "vue-router": "^4.0.12",
     "vuedraggable": "^4.0.1"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "^4.5.15",
@@ -30,6 +36,7 @@
     "babel-plugin-component": "^1.1.1",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
+    "electron": "^18.0.1",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
     "file-loader": "^6.2.0",

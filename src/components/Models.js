@@ -8,6 +8,8 @@ import PouchDB from 'pouchdb'
 import PouchdbFind from 'pouchdb-find'
 PouchDB.plugin(PouchdbFind)
 
+import axios from 'axios'
+
 
 var Album;
 var AlbumCoin;
@@ -289,13 +291,13 @@ async function importChatMessage(db, a) {
   });
 }
 
-async function migrate2Pouch(skipCheckOldDataPresence = false) {
+async function migrate2Pouch(bucketID, skipCheckOldDataPresence = false) {
   if (typeof persistence === 'undefined') {
     throw new Error('Undefined persistence.js')
   }
 
   await setupModels()
-  await syncNowLegacy('937202d09512224da16e9ec0275c3eba106cabbd')
+  await syncNowLegacy(bucketID)
   
   if (true) {
   //if (typeof persistence.generatedTables.Coin !== 'undefined') {
@@ -318,9 +320,10 @@ async function migrate2Pouch(skipCheckOldDataPresence = false) {
   } // Aprilo e distruggilo
 
 
+  let dbName = DBNAME
   await destroyDB(); // Ricrealo
 
-  globalDB = await initDB();
+  globalDB = await initDB(dbName);
   globalDB.info().then(async () => {
     // The database exists.
     // Do something...
