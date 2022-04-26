@@ -1,7 +1,7 @@
 <template>
   <div id="sylloge-menu" class="affix">
     <el-menu
-      :default-active="homeIndex"
+      :default-active="''+homeIndex"
       mode="horizontal"
       background-color="#545c64"
       text-color="#fff"
@@ -43,9 +43,9 @@ export default {
   components: {
     House, Coin, FolderOpened, Setting, ArrowLeft
   },
-  props: [
-    'homeIndex'
-  ],
+  props: {
+    homeIndex: Number
+  },
   computed: {
     backIsActive: function () {
       console.log(window.history.length)
@@ -56,6 +56,15 @@ export default {
       return window.history.length > this.$root.historyCount
     }
   },
+  /*
+  mounted: function () {
+    console.log('navbar: ' + this.$router.currentRoute._value.path)
+    console.log(this.$router.currentRoute._value)
+    if (this.$router.currentRoute._value.path == '/') {
+      this.homeIndex = "1"
+    }
+  },
+  */
   methods: {
     currentPath() {
       return this.$route.path

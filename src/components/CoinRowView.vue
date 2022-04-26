@@ -3,10 +3,10 @@
     <el-row :gutter="10">
       
       <el-col :span="4">
-        <img class="img-thumb" style="max-width: 98%;" :src="coin.doc.imgObv" alt="obverse image"/>
+        <img class="img-thumb" style="max-width: 98%;" :src="coin.doc.imgObv" alt="no obv. image"/>
       </el-col>
       <el-col :span="4">
-        <img class="img-thumb" style="max-width: 98%;" :src="coin.doc.imgRev" alt="reverse image"/>
+        <img class="img-thumb" style="max-width: 98%;" :src="coin.doc.imgRev" alt="no rev. image"/>
       </el-col>
       <el-col class="coin-desc" :span="16">
         {{coinToString(coin.doc)}}

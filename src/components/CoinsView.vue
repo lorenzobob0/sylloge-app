@@ -1,7 +1,7 @@
 <template>
   <div class="hello"> 
     <el-affix position="top" :offset="0">
-      <sylloge-menu :homeIndex="'2'" />
+      <sylloge-menu :homeIndex="2" />
     </el-affix>
     <el-row id="search-coins">
       <el-col :span="18">

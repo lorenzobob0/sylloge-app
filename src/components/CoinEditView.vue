@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="buttonbar-affix-bottom">
-      <el-button type="success" round @click="saveData">
+      <el-button v-if="dirty" type="success" round @click="saveData">
         <el-icon><circle-check /></el-icon>
         <template #title>Save</template>
       </el-button>
@@ -10,61 +10,90 @@
         <template #title>Delete</template>
       </el-button>            
     </div>
-    <sylloge-menu :homeIndex="'2'" />
+    <sylloge-menu :homeIndex="2" />
     <div id="main-page">
-      <el-row>
-        <el-col id="row-imgs" :span="12">
-          <image-field-view :img="imgObv" @changed="updateImageObv" />
-        </el-col>
-        <el-col :span="12">
-          <image-field-view :img="imgRev" @changed="updateImageRev" />
-        </el-col>
-      </el-row>
-  
-      <el-row>
-        <el-col :span="12">
-          <el-input placeholder="Ruler" v-model="coin.ruler"></el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-select v-model="coin.ruler" placeholder="Select">
-            <el-option v-for="ruler in rulers" :key="ruler" :label="ruler" :value="ruler" />
-          </el-select>  
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-input placeholder="Mint" v-model="coin.mint"></el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-select v-model="coin.mint" placeholder="Select">
-            <el-option v-for="mint in mints" :key="mint" :label="mint" :value="mint" />
-          </el-select>  
-        </el-col>
-      </el-row>
-      <el-input @change="markDirty()" placeholder="General description" type="textarea" v-model="coin.coinType"></el-input>
-      <el-input @change="markDirty()" placeholder="Obverse" v-model="coin.obverse"></el-input>
-      <el-input @change="markDirty()" placeholder="Reverse" v-model="coin.reverse"></el-input>
-      <el-input @change="markDirty()" placeholder="Biblio" v-model="coin.biblio"></el-input>
-      <el-input @change="markDirty()" placeholder="Diameter" v-model="coin.diameter"></el-input>
-      <el-input @change="markDirty()" placeholder="Weight" v-model="coin.weight"></el-input>
-      <el-input @change="markDirty()" placeholder="Metal" v-model="coin.metal"></el-input>
-      <el-input @change="markDirty()" placeholder="Notes" type="textarea" v-model="coin.notes"></el-input>
-      <el-input @change="markDirty()" placeholder="Price &amp; Provenance" v-model="coin.price"></el-input>
-      <el-input @change="markDirty()" placeholder="Code" v-model="coin.code"></el-input>
+      <el-form label-width="120px">
+        <el-form-item label="Inventory no.:">
+          <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Code" v-model="coin.code"></el-input>
+        </el-form-item>
 
-      <el-select v-model="belongToAlbums" multiple placeholder="Albums">
-        <el-option
-          v-for="album in albums"
-          :key="album.album._id"
-          :label="album.album.name"
-          :value="album.album._id">
-        </el-option>
-      </el-select>
-      
-      <!--
-      <el-button type="success" icon="el-icon-circle-check" circle @click="saveData()"></el-button>
-      <el-button type="danger" icon="el-icon-delete" circle></el-button>
-      -->
+        <el-row class="form-element" style="text-align:center">
+          <el-col id="row-imgs" :span="12">
+            <image-field-view :img="imgObv" @changed="updateImageObv" />
+          </el-col>
+          <el-col :span="12">
+            <image-field-view :img="imgRev" @changed="updateImageRev" />
+          </el-col>
+        </el-row>
+
+        <el-form-item label="Authority:">
+            <el-autocomplete 
+              placeholder="Ruler"
+              @keypress="markDirty()" @change="markDirty()" 
+              v-model="coin.ruler" 
+              :fetch-suggestions="suggestRuler" clearable></el-autocomplete>
+        </el-form-item>
+
+        <el-form-item label="Mint:">
+            <el-autocomplete placeholder="Ruler" @keypress="markDirty()" @change="markDirty()" v-model="coin.mint" :fetch-suggestions="suggestMint" clearable></el-autocomplete>
+        </el-form-item>
+
+        <el-form-item label="Description:">
+          <el-input @keypress="markDirty()" @change="markDirty()" placeholder="" autosize type="textarea" v-model="coin.coinType"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Obverse:">
+          <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Obverse" autosize type="textarea" v-model="coin.obverse"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Reverse:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Reverse" autosize type="textarea" v-model="coin.reverse"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Biblio:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Biblio" v-model="coin.biblio"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Diameter:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Diameter" v-model="coin.diameter"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Weight:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Weight" v-model="coin.weight"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Metal:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Metal" v-model="coin.metal"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Notes:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Notes" autosize type="textarea" v-model="coin.notes"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Price:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Price" v-model="coin.price"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Provenance:">
+          <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Provenance" v-model="coin.provenance"></el-input>
+        </el-form-item>
+
+
+        <el-form-item label="Albums:">
+          <el-select v-model="belongToAlbums" multiple placeholder="Albums">
+            <el-option
+              v-for="album in albums"
+              :key="album.album._id"
+              :label="album.album.name"
+              :value="album.album._id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <!--
+        <el-button type="success" icon="el-icon-circle-check" circle @click="saveData()"></el-button>
+        <el-button type="danger" icon="el-icon-delete" circle></el-button>
+        -->
+      </el-form>
     </div>
 
   </div>
@@ -140,6 +169,31 @@ export default {
     return true
   },
   methods: {
+    suggestRuler (queryString, callBack) {
+      const self = this
+      queryString = queryString.toLowerCase()
+      let suggestions = []
+      for (let i = 0; i < self.rulers.length; i++) {
+        let e = self.rulers[i]
+        if (e.toLowerCase().startsWith(queryString)) {
+          suggestions.push({ value: e })
+        }
+      }
+      callBack(suggestions)
+    },
+    suggestMint (queryString, callBack) {
+      const self = this
+      queryString = queryString.toLowerCase()
+      let suggestions = []
+      for (let i = 0; i < self.mints.length; i++) {
+        let e = self.rulers[i]
+        if (e.toLowerCase().startsWith(queryString)) {
+          suggestions.push({ value: e })
+        }
+      }
+      callBack(suggestions)
+    },
+
     markDirty() {
       this.dirty = true
     },
@@ -225,6 +279,21 @@ export default {
     goBack() {
       this.$router.go(-1)
     },
+
+    removeAttachmentAsync(db, id, name, rev) {
+      return new Promise((resolve, reject) => {
+        db.removeAttachment(id, name, rev).then(function (result) {
+          if (result == undefined) {
+            resolve({'rev': rev})
+          } else {
+            resolve(result)
+          }
+        }).catch(function (err) {
+          console.log(err)
+          reject(err)
+        })
+      })
+    },
     async saveData() {
       const self = this
       const globalDB = await ModelsAPI.initDB()
@@ -236,13 +305,13 @@ export default {
       if (self.imgObvData != null) {
         res = await globalDB.putAttachment(self.coin._id, 'imgObv', rev, self.imgObvData, 'image/jpeg') 
       } else {
-        res = await globalDB.removeAttachment(self.coin._id, 'imgObv', rev)
+        res = await self.removeAttachmentAsync(globalDB, self.coin._id, 'imgObv', rev)
       }
       rev = res.rev
       if (self.imgRevData != null) {
         res = await globalDB.putAttachment(self.coin._id, 'imgRev', rev, self.imgRevData, 'image/jpeg') 
       } else {
-        res = await globalDB.removeAttachment(self.coin._id, 'imgRev', rev)
+        res = await self.removeAttachmentAsync(globalDB, self.coin._id, 'imgRev', rev)
       }
       // Salva tutti i documenti
       for (let i = 0; i < self.albums.length; i++) {
@@ -321,6 +390,8 @@ export default {
 
 #row-imgs {
   padding-bottom: 5px;
+  display: flex;
+  justify-content: center;
 }
 
 #buttonbar-affix-bottom {
@@ -332,5 +403,14 @@ export default {
 
   text-align: right;
   padding: 20px;
+}
+#main-page {
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.form-element {
+  margin-bottom: 2em;
+  text-align: left;
 }
 </style>

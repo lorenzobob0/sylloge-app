@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <sylloge-menu :homeIndex="'1'" />
+    <sylloge-menu :homeIndex="1" />
     <h1>Welcome to Sylloge version {{version}}</h1>
     <p>
       This is a work-in-progress rewrite and enhancement of 

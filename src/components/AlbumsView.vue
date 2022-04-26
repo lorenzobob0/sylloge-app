@@ -1,6 +1,6 @@
 <template>
   <div class="albums">
-    <sylloge-menu :homeIndex="'3'" />
+    <sylloge-menu :homeIndex="3" />
     <el-row>
       <el-col :span="18">
         <el-input placeholder="Search albums" v-model="searchTerms" ></el-input>
