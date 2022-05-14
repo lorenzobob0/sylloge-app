@@ -8,7 +8,7 @@
       active-text-color="#ffd04b"
       @select="handleTabClick"
     >
-      <el-menu-item index="-1" v-if="backIsActive" >
+      <el-menu-item index="-1" v-if="false && backIsActive" >
         <slot>
           <span @click="goBack">
             <el-icon><arrow-left /></el-icon>

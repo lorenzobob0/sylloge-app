@@ -78,8 +78,13 @@ function connectionURL(username, password) {
   return remoteURL
 }
 
-function enableSync(username, password, handlers = {}) {
-  const remoteURL = 'https://' + encodeURIComponent(username.toLowerCase()) + ':' + encodeURIComponent(password) + '@sylloge-app.com/db/userdb-' + hexEncode(username.toLowerCase())
+function enableSync(server, username, password, db, handlers = {}) {
+  const components = server.split('://')
+  if (components.length != 2) {
+    console.error('wrong server format')
+    return
+  }
+  const remoteURL = components[0] + '://' + encodeURIComponent(username.toLowerCase()) + ':' + encodeURIComponent(password) + '@' + components[1] + db
   syncHandler = PouchDB.sync(DBNAME, remoteURL, {
     live: true,
     retry: true,
@@ -263,6 +268,23 @@ async function importAlbum(db, a) {
 }
 
 async function importAlbumCoin(db, a) {
+  console.log(a)
+  if (a.coin != null) {
+    // Trova la moneta con questo id
+    const coin = await db.get(a.coin.id)
+    const album = await db.get(a.album.id)
+
+    // Se non è associato all'album, aggiungilo e salva
+    if (album.coins.indexOf(coin._id) < 0) {
+      console.log(album.name + ' > ' + coin._id)
+      album.coins.push(coin._id)
+      let res = await db.put(album)
+      album._rev = res.rev
+    }
+
+  }
+
+  /*
   let doc = await db.put({
     _id: a.id,
     type: 'AlbumCoin',
@@ -273,6 +295,7 @@ async function importAlbumCoin(db, a) {
   if (a.image !== '') {
     doc = await db.putAttachment(doc.id, 'image', doc.rev, b64toBlob(a.image), 'image/jpeg');
   }
+  */
 }
 
 async function importChatMessage(db, a) {
@@ -297,7 +320,11 @@ async function migrate2Pouch(bucketID, skipCheckOldDataPresence = false) {
   }
 
   await setupModels()
-  await syncNowLegacy(bucketID)
+  try {
+    await syncNowLegacy(bucketID)
+  } catch (error) {
+    throw error
+  }
   
   if (true) {
   //if (typeof persistence.generatedTables.Coin !== 'undefined') {
@@ -331,7 +358,7 @@ async function migrate2Pouch(bucketID, skipCheckOldDataPresence = false) {
 
     for (let i = 0; i < coins.length; i++) {
       let c = coins[i];
-      importCoin(globalDB, c);
+      await importCoin(globalDB, c);
     } // Importa Album
 
 
@@ -339,17 +366,17 @@ async function migrate2Pouch(bucketID, skipCheckOldDataPresence = false) {
 
     for (let i = 0; i < albums.length; i++) {
       let a = albums[i];
-      importAlbum(globalDB, a);
+      await importAlbum(globalDB, a);
     } // Importa AlbumCoin
     // Superfluo: l'associazione è salvata in album direttamente
 
-    /*
+    
     let albumcoins = await async_list(AlbumCoin)
     for (let i = 0; i < albumcoins.length; i++) {
       let a = albumcoins[i]
-      importAlbumCoin(globalDB, a)
+      await importAlbumCoin(globalDB, a)
     }
-    */
+    
 
 
     let messages = await async_list(ChatMessage);
@@ -357,7 +384,9 @@ async function migrate2Pouch(bucketID, skipCheckOldDataPresence = false) {
     for (let i = 0; i < messages.length; i++) {
       let m = messages[i];
       importChatMessage(globalDB, m);
-    } // Alla fine chiede se eliminare i dati vecchi persistencejs
+    } 
+    
+    // Alla fine chiede se eliminare i dati vecchi persistencejs
 
 
     if (confirm('Do you want to delete the old data?')) {

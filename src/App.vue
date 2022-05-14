@@ -80,4 +80,15 @@ textarea {
   padding: 0 !important;
 }
 
+#buttonbar-affix-bottom {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9999;
+
+  text-align: right;
+  padding: 20px;
+}
+
 </style>

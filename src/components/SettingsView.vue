@@ -1,30 +1,33 @@
 <template>
-  <div class="hello">
+  <div class="settings">
+    <sylloge-menu :homeIndex="4" />
     <h1>Settings</h1>
     <p>
-      <el-button @click="destroyLocal" type="danger">Destroy local data</el-button>
-      <el-button @click="importLegacyDialog=true" type="danger">Import Sylloge legacy data from cloud</el-button>
-
-      <el-button @click="exportData" type="danger">Export data</el-button>
-
+        <el-button @click="exportData" class="setting-btn" type="success">Export data (local backup)</el-button>
+    </p>
+    <p>
       <el-upload
         :show-file-list="false"
         :on-success="importData"
         :auto-upload="true"
         :before-upload="importData"
       >
-        <el-button type="primary">Load backup</el-button>
+        <el-button type="success" >Load backup</el-button>
         <template #tip>
           <div class="el-upload__tip">
-            .db files (JSON), previously exported from this app
+            You can use .db files (JSON), previously exported from this app
           </div>
         </template>
       </el-upload>
-
-      <el-button @click="importData" type="danger">Import data</el-button>
-
-      <el-button @click="enableSync" type="success">Enable Sync</el-button>
-
+    </p>
+    <p>
+        <el-button @click="destroyLocal" class="setting-btn" type="danger">Destroy local data</el-button>
+    </p>
+    <p>
+        <el-button @click="importLegacyDialog=true" class="setting-btn" type="primary">Import Sylloge-app v.1 legacy data from cloud</el-button>
+    </p>
+    <p>
+      <el-button @click="syncDataDialog = true" class="setting-btn" type="success">Enable Sync</el-button>
     </p>
 
     <el-dialog
@@ -43,7 +46,30 @@
             >
           </span>
         </template>
-      </el-dialog>
+    </el-dialog>
+
+    <el-dialog
+        v-model="syncDataDialog"
+        title="Data Sync"
+        width="300px"
+      >
+        <span>
+          <b>Experimental feature!</b><br/>
+          Please specify a sync server name, a database name and server credentials.
+        </span>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-input v-model="syncDataUsername" placeholder="Username" @change="syncDataUpdateDB" />
+            <el-input v-model="syncDataPassword" placeholder="Password" type="password" show-password />
+            <el-input v-model="syncDataServer" placeholder="Server URL" />
+            <el-input v-model="syncDataDB" placeholder="db-name" />
+            <el-button @click="syncDataDialog=false">Cancel</el-button>
+            <el-button type="primary" @click="enableSync">Enable Sync</el-button
+            >
+          </span>
+        </template>
+    </el-dialog>
+
 
   </div>
 </template>
@@ -51,18 +77,42 @@
 <script>
 import ModelsAPI from './Models.js'
 import axios from 'axios'
+import SylllogeMenu from './SylllogeMenu.vue'
 
 export default {
   name: 'SettingsView',
+  components: {
+    'sylloge-menu': SylllogeMenu
+  },
   data () {
     return {
       loading: false,
       importLegacyDialog: false,
       importLegacyUsername: null,
       importLegacyPassword: null,
+      syncDataDialog: false,
+      syncDataServer: 'https://sylloge-app.com/db/',
+      syncDataUsername: '', 
+      syncDataPassword: '',
+      syncDataDB: '' // '/userdb-' + hexEncode(username.toLowerCase()
     }
   },
   methods: {
+    
+    syncDataUpdateDB() {
+      const self = this
+      const hexEncode = function (str) {
+        var hex, i
+        var result = ''
+
+        for (i = 0; i < str.length; i++) {
+          hex = str.charCodeAt(i).toString(16)
+          result += hex
+        }
+        return result
+      }
+      self.syncDataDB = 'userdb-' + hexEncode(this.syncDataUsername.toLowerCase())
+    },
     async destroyLocal () {
       if (confirm('Please confirm you want to delete the local data. This can not be undone. Continue?')) {
         await ModelsAPI.destroyDB()
@@ -131,7 +181,8 @@ export default {
     },
 
     enableSync() {
-      ModelsAPI.enableSync('lorenzo.rimini@gmail.com', 'lorenzo81')
+      ModelsAPI.enableSync(this.syncDataServer, this.syncDataUsername, this.syncDataPassword, this.syncDataDB)
+      this.syncDataDialog = false
     },
 
     download(data, filename, type) {
@@ -157,3 +208,8 @@ export default {
 
 }
 </script>
+<style scoped>
+.setting-btn {
+  width: 90%;
+}
+</style>

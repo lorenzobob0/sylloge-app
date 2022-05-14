@@ -6,6 +6,7 @@ import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/index.css'
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/theme-chalk/display.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import './assets/global.css'
 

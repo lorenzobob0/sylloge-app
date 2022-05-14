@@ -1,24 +1,29 @@
 <template>
   <div class="albums">
     <sylloge-menu :homeIndex="3" />
-    <el-row>
+
+    <el-row id="search-albums">
       <el-col :span="18">
         <el-input placeholder="Search albums" v-model="searchTerms" ></el-input>
       </el-col>
-      <el-col :span="4">
-        <el-button type="primary" icon="el-icon-search" @click="updateFilter">Search</el-button>  
+      <el-col :span="1">
       </el-col>
-      <el-col :span="2">
-        <el-button type="success" icon="el-icon-plus" @click="addNewItem"></el-button>  
-      </el-col>      
+
+      <el-col :span="5">
+        <el-button type="success" @click="addNewItem" style="width:100%">
+          <el-icon><plus /></el-icon> <span class="hidden-xs-only" >&nbsp;&nbsp; New album </span>
+        </el-button>  
+      </el-col>
+   
     </el-row>
+
 
     <div class="pagination-holder">
     </div>
+    <el-empty v-if="albums.length == 0" description="No results" />
     <draggable class="albums-container dragArea list-group w-full" :list="albums" @change="persistOrder">
-      <album-row-view v-for="album in albums" :key="album.id" :album="album" @edit="editAlbum(album)" @view="viewAlbum(album)" ></album-row-view>
+      <album-row-view v-for="album in albums" class="album" :key="album.id" :album="album" @edit="editAlbum(album)" @view="viewAlbum(album)" ></album-row-view>
     </draggable>  
-    
   </div>
 </template>
 
@@ -27,6 +32,7 @@ import ModelsAPI from './Models.js'
 import AlbumRowView from './AlbumRowView.vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 import SylllogeMenu from './SylllogeMenu.vue'
+import { Plus, Search } from '@element-plus/icons-vue'
 
 export default {
   name: 'AlbumsView',
@@ -34,6 +40,7 @@ export default {
     'album-row-view': AlbumRowView,
     'draggable': VueDraggableNext,
     'sylloge-menu': SylllogeMenu,
+    Plus,  Search
   },
   data () {
     return {
@@ -77,7 +84,7 @@ export default {
           }
         }
       }
-      
+
       self.albums = allAlbums.rows.sort(function (a, b) {
         return a.doc.internalOrder > b.doc.internalOrder
       })
@@ -93,7 +100,8 @@ export default {
       let c = {
         type: 'Album',
         creationDate: new Date(),
-        coinType: 'New entry'
+        name: 'New album',
+        coins: []
       }
 
       try {
@@ -132,9 +140,31 @@ export default {
   margin-top: 10px;
   margin-bottom:  10px;
   justify-content: space-evenly;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 .albums-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
+#search-albums {
+  margin: 10px;
+  margin-bottom: 20px;
+}
+
+.albums-container {
+  margin: 10px;
+}
+
+.album {
+  width: 30%;
+  height: 300px;
+}
+@media screen and (max-width: 480px) {
+  .album {
+    width: 100%;
+  }
+}
+
 </style>

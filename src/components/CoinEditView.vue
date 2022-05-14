@@ -80,7 +80,7 @@
 
 
         <el-form-item label="Albums:">
-          <el-select v-model="belongToAlbums" multiple placeholder="Albums">
+          <el-select v-model="belongToAlbums" @change="markDirty()" multiple placeholder="Albums">
             <el-option
               v-for="album in albums"
               :key="album.album._id"
@@ -196,6 +196,7 @@ export default {
 
     markDirty() {
       this.dirty = true
+      console.log(this.belongToAlbums)
     },
     async loadMintsEtc () {
       const self = this
@@ -234,6 +235,7 @@ export default {
       })
       self.albums = []
       self.belongToAlbums = []
+      console.log(allAlbums.docs)
       for (let i = 0; i < allAlbums.docs.length; i++) {
         let selected = false
         let a = allAlbums.docs[i]
@@ -316,7 +318,12 @@ export default {
       // Salva tutti i documenti
       for (let i = 0; i < self.albums.length; i++) {
         let a = self.albums[i].album
+        if (typeof a.coins === 'undefined') {
+          a.coins = []
+        }
         if (self.belongToAlbums.indexOf(a._id) >= 0) {
+          console.log('Salva associazione album moneta')
+          console.log(a)
           if (a.coins.indexOf(self.coin._id) < 0) {
             a.coins.push(self.coin._id)
             a.lastModified = new Date()
@@ -394,16 +401,6 @@ export default {
   justify-content: center;
 }
 
-#buttonbar-affix-bottom {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  z-index: 9999;
-
-  text-align: right;
-  padding: 20px;
-}
 #main-page {
   margin-top: 20px;
   margin-left: 10px;

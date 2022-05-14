@@ -9,18 +9,30 @@
         <p class="album-name">
           {{album.doc.name}}
         </p>
-        <p>
+        <p class="album-description">
+          {{album.doc.albumDescription}}
+        </p>
+        <p v-if="album.doc.coins">
           Coins: {{album.doc.coins.length}}
+        </p>
+        <p v-else> 
+          No coins in this album
         </p>
         <p>
           Last modified: {{elapsedTimeSinceLastEdit}}
         </p>
       </el-col>
+      <!--
       <el-col :span="2">
-        <el-button type="primary" icon="el-icon-edit" circle @click="$emit('edit', album)"></el-button>
+        <el-button type="primary" circle @click="$emit('edit', album)">
+          <el-icon><edit-pen /></el-icon>
+        </el-button>
       </el-col>
+      -->
       <el-col :span="2">
-        <el-button type="success" icon="el-icon-view" circle @click="$emit('view', album)"></el-button>
+        <el-button type="success" circle @click="$emit('view', album)">
+          <el-icon><folder-opened /></el-icon>
+        </el-button>
       </el-col>
 
     </el-row>
@@ -30,14 +42,18 @@
 <script>
 import ModelsAPI from './Models.js'
 import moment from 'moment'
+import { FolderOpened, EditPen } from '@element-plus/icons-vue'
 
 export default {
   name: 'AlbumRowView',
+  components: {
+    FolderOpened, EditPen
+  },
   props: [
     'album'
   ],
   emits: [
-    'view', 
+    /*'view', */
     'edit'
   ],
   data () {
@@ -70,10 +86,9 @@ export default {
 </script>
 
 <style scoped>
-.album {
-  max-width: 300px;
-  width: 100%;
-  height: 300px;
+
+.album-description {
+  white-space: pre;
 }
 .album-cover {
   max-width: 290px;

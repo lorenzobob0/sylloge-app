@@ -1,43 +1,44 @@
 <template>
   <div class="album-edit-view">
-    <div id="side-tools">
-      <el-menu :collapse="true">
-        <el-menu-item  @click="goBack()">
-          <i class="el-icon-arrow-left"></i>
-          <template #title>Go back</template>
-        </el-menu-item>
-        
-        <el-menu-item  @click="saveData()">
-          <i class="el-icon-circle-check"></i>
-          <template #title>Save</template>
-        </el-menu-item>
-        <el-menu-item>
-          <i class="el-icon-delete" @click="deleteRecord"></i>
-          <template #title>Delete</template>
-        </el-menu-item>
-      </el-menu>
+    <div id="buttonbar-affix-bottom">
+      <el-button v-if="dirty" type="success" round @click="saveData">
+        <el-icon><circle-check /></el-icon>
+        <template #title>Save</template>
+      </el-button>
+      <el-button type="danger" round @click="deleteRecord">
+        <el-icon><delete /></el-icon>
+        <template #title>Delete</template>
+      </el-button>            
     </div>
+    <sylloge-menu :homeIndex="3" />
+
     <div id="main-page">
-      <el-row>
-        <el-col id="row-imgs" :span="24">
-          <image-field-view :img="cover" @changed="updateCover" />
-        </el-col>
-      </el-row>
+      <el-form label-width="120px">
+        <el-row class="form-element" style="text-align:center">
+          <el-col id="row-imgs" :span="24">
+            <image-field-view :img="cover" @changed="updateCover" />
+          </el-col>
+        </el-row>
 
-      <el-input @change="markDirty()" placeholder="Album's Name" v-model="album.name"></el-input>
-      <el-input @change="markDirty()" placeholder="General description" type="textarea" v-model="album.albumDescription"></el-input>
+        <el-form-item label="Title:">
+          <el-input @keypress="markDirty()" @change="markDirty()" placeholder="" autosize v-model="album.name"></el-input>
+        </el-form-item>
+        <el-form-item label="Description:">
+          <el-input @keypress="markDirty()" @change="markDirty()" placeholder="" autosize type="textarea" v-model="album.albumDescription"></el-input>
+        </el-form-item>
 
-      <h3>Album content:</h3>
-      <el-button @click="addMeta()">Add notes / images</el-button>
-      <draggable class="albums-container dragArea list-group w-full" :list="albumCoins" @change="persistOrder">
-        <div v-for="c in albumCoins" :key="c.id">
-          <coin-row-view  v-if="typeof c.doc !== 'undefined' && c.doc.type == 'Coin'" :coin="c" @click="editCoin(coin)"></coin-row-view>
-          <div v-else style="text-align: center;" >
-            <img v-if="c._img" :src="c._img" />
-            <p align="left" @click="editMeta(c)">{{c.text}}</p>
+        <h3>Album content:</h3>
+        <el-button @click="addMeta()">Add notes / images</el-button>
+        <draggable class="albums-container dragArea list-group w-full" :list="albumCoins" @change="persistOrder">
+          <div v-for="c in albumCoins" :key="c.id">
+            <coin-row-view  v-if="typeof c.doc !== 'undefined' && c.doc.type == 'Coin'" :coin="c" @click="editCoin(coin)"></coin-row-view>
+            <div v-else style="text-align: center;" >
+              <img v-if="c._img" :src="c._img" />
+              <p align="left" @click="editMeta(c)">{{c.text}}</p>
+            </div>
           </div>
-        </div>
-      </draggable>
+        </draggable>
+      </el-form>
     </div>
 
     <el-dialog
@@ -61,6 +62,8 @@ import ImageTools from './ImageTools.js'
 import ImageFieldView from './ImageFieldView.vue'
 import CoinRowView from './CoinRowView.vue'
 import { VueDraggableNext } from 'vue-draggable-next'
+import { Delete, ArrowLeft, CircleCheck } from '@element-plus/icons-vue'
+import SylllogeMenu from './SylllogeMenu.vue'
 
 export default {
   name: 'AlbumEditView',
@@ -68,6 +71,8 @@ export default {
     'coin-row-view': CoinRowView,
     'draggable': VueDraggableNext,
     'image-field-view': ImageFieldView,
+    'sylloge-menu': SylllogeMenu,
+    Delete, ArrowLeft, CircleCheck
   },
   props: [
     'id'
@@ -231,6 +236,21 @@ export default {
       this.markDirty()
       return false
     },
+
+    removeAttachmentAsync(db, id, name, rev) {
+      return new Promise((resolve, reject) => {
+        db.removeAttachment(id, name, rev).then(function (result) {
+          if (result == undefined) {
+            resolve({'rev': rev})
+          } else {
+            resolve(result)
+          }
+        }).catch(function (err) {
+          console.log(err)
+          reject(err)
+        })
+      })
+    },
     async saveData() {
       const self = this
       const globalDB = await ModelsAPI.initDB()
@@ -242,24 +262,28 @@ export default {
           data: self.coverData
         }
       } else {
-        delete self.album._attachments['cover']
+        if (typeof self.album._attachments != 'undefined' && typeof self.album._attachments['cover'] != 'undefined') {
+          delete self.album._attachments['cover']
+        }
       }
 
-      for (let j = 0; j < self.album.coins.length; j++) {
-        if (typeof self.album.coins[j] !== 'string') {
-          let meta = self.album.coins[j]
-          let url = ''
-          if (typeof meta.imageID !== 'undefined' && meta.imageID != '') {
-            if (meta._imgData != null) {
-              self.album._attachments[meta.imageID] = {
-                content_type: 'image/jpeg',
-                data: meta._imgData
+      if (typeof self.album.coins != 'undefined') {
+        for (let j = 0; j < self.album.coins.length; j++) {
+          if (typeof self.album.coins[j] !== 'string') {
+            let meta = self.album.coins[j]
+            let url = ''
+            if (typeof meta.imageID !== 'undefined' && meta.imageID != '') {
+              if (meta._imgData != null) {
+                self.album._attachments[meta.imageID] = {
+                  content_type: 'image/jpeg',
+                  data: meta._imgData
+                }
+              } else {
+                delete self.album._attachments[meta.imageID]
               }
-            } else {
-              delete self.album._attachments[meta.imageID]
             }
-          }
 
+          }
         }
       }
 
@@ -289,14 +313,10 @@ export default {
 </script>
 
 <style scoped>
-#side-tools {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 60px;
-}
 #main-page {
-  margin-left: 60px;
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .coin-desc {
@@ -306,5 +326,8 @@ export default {
 
 #row-imgs {
   padding-bottom: 5px;
+  display: flex;
+  justify-content: center;
 }
+
 </style>
