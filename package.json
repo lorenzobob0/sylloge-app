@@ -3,6 +3,8 @@
   "version": "0.1.1",
   "private": true,
   "main": "electron.js",
+  "author": "Lorenzo Moretti",
+  "description": "An app to organize your coins collection.",
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
     "dev": "webpack serve --hot --config webpack.config.dev.js",
