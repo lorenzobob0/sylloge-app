@@ -4,6 +4,8 @@
   "private": false,
   "repository": "github:lorenzobob0/sylloge-app",
   "main": "electron.js",
+  "author": "Lorenzo Moretti",
+  "description": "An app to organize your coins collection.",
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
     "dev": "webpack serve --hot --config webpack.config.dev.js",
