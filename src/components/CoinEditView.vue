@@ -18,24 +18,24 @@
         </el-form-item>
 
         <el-row class="form-element" style="text-align:center">
-          <el-col id="row-imgs" :span="12">
+          <el-col id="row-imgs" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <image-field-view :img="imgObv" @changed="updateImageObv" />
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <image-field-view :img="imgRev" @changed="updateImageRev" />
           </el-col>
         </el-row>
 
         <el-form-item label="Authority:">
             <el-autocomplete 
-              placeholder="Ruler"
+              placeholder="Authority"
               @keypress="markDirty()" @change="markDirty()" 
               v-model="coin.ruler" 
               :fetch-suggestions="suggestRuler" clearable></el-autocomplete>
         </el-form-item>
 
         <el-form-item label="Mint:">
-            <el-autocomplete placeholder="Ruler" @keypress="markDirty()" @change="markDirty()" v-model="coin.mint" :fetch-suggestions="suggestMint" clearable></el-autocomplete>
+            <el-autocomplete placeholder="Mint" @keypress="markDirty()" @change="markDirty()" v-model="coin.mint" :fetch-suggestions="suggestMint" clearable></el-autocomplete>
         </el-form-item>
 
         <el-form-item label="Description:">

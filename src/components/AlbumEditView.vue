@@ -31,9 +31,9 @@
         <el-button @click="addMeta()">Add notes / images</el-button>
         <draggable class="albums-container dragArea list-group w-full" :list="albumCoins" @change="persistOrder">
           <div v-for="c in albumCoins" :key="c.id">
-            <coin-row-view  v-if="typeof c.doc !== 'undefined' && c.doc.type == 'Coin'" :coin="c" @click="editCoin(coin)"></coin-row-view>
+            <coin-row-view  v-if="typeof c.doc !== 'undefined' && c.doc.type == 'Coin'" :coin="c" @click="editCoin(c)"></coin-row-view>
             <div v-else style="text-align: center;" >
-              <img v-if="c._img" :src="c._img" />
+              <img v-if="c._img" :src="c._img" @click="editMeta(c)" />
               <p align="left" @click="editMeta(c)">{{c.text}}</p>
             </div>
           </div>

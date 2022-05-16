@@ -150,7 +150,7 @@ async function destroyDB () {
   globalDB = null
 }
 
-async function initDB(dbname = null) {
+async function initDB(dbname = DBNAME) {
   if (globalDB != null) {
       return globalDB;
   }
@@ -277,7 +277,7 @@ async function importAlbumCoin(db, a) {
     // Se non è associato all'album, aggiungilo e salva
     if (album.coins.indexOf(coin._id) < 0) {
       console.log(album.name + ' > ' + coin._id)
-      album.coins.push(coin._id)
+      album.coins.push([a.order, coin._id])
       let res = await db.put(album)
       album._rev = res.rev
     }
@@ -368,16 +368,31 @@ async function migrate2Pouch(bucketID, skipCheckOldDataPresence = false) {
       let a = albums[i];
       await importAlbum(globalDB, a);
     } // Importa AlbumCoin
-    // Superfluo: l'associazione è salvata in album direttamente
-
     
+
+    // Save album-coins associations in the format (order, coin_id)
     let albumcoins = await async_list(AlbumCoin)
     for (let i = 0; i < albumcoins.length; i++) {
       let a = albumcoins[i]
       await importAlbumCoin(globalDB, a)
     }
+    // Restore for each album the list of coins as [coin_id]
+    let allAlbums = await globalDB.find({
+      selector: {
+        type: 'Album'
+      }
+    })
     
-
+    for (let i = 0; i < allAlbums.docs.length; i++) {
+      let a = allAlbums.docs[i]
+      let coins_list = a.coins
+      coins_list = coins_list.sort()
+      a.coins = []
+      for (let j = 0; j < coins_list.length; j++) {
+        a.coins.push(coins_list[j][1])
+      }
+      await globalDB.put(a)
+    }
 
     let messages = await async_list(ChatMessage);
 
