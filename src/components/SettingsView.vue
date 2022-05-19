@@ -48,29 +48,6 @@
         </template>
     </el-dialog>
 
-    <el-dialog
-        v-model="syncDataDialog"
-        title="Data Sync"
-        width="300px"
-      >
-        <span>
-          <b>Experimental feature!</b><br/>
-          Please specify a sync server name, a database name and server credentials.
-        </span>
-        <template #footer>
-          <span class="dialog-footer">
-            <el-input v-model="syncDataUsername" placeholder="Username" @change="syncDataUpdateDB" />
-            <el-input v-model="syncDataPassword" placeholder="Password" type="password" show-password />
-            <el-input v-model="syncDataServer" placeholder="Server URL" />
-            <el-input v-model="syncDataDB" placeholder="db-name" />
-            <el-button @click="syncDataDialog=false">Cancel</el-button>
-            <el-button type="primary" @click="enableSync">Enable Sync</el-button
-            >
-          </span>
-        </template>
-    </el-dialog>
-
-
   </div>
 </template>
 
@@ -95,25 +72,12 @@ export default {
       syncDataServer: 'https://sylloge-app.com/db/',
       syncDataUsername: '', 
       syncDataPassword: '',
-      syncDataDB: '' // '/userdb-' + hexEncode(username.toLowerCase()
+      syncDataDB: '', // '/userdb-' + hexEncode(username.toLowerCase()
+      syllogeSettings: settings() 
     }
   },
   methods: {
-    
-    syncDataUpdateDB() {
-      const self = this
-      const hexEncode = function (str) {
-        var hex, i
-        var result = ''
-
-        for (i = 0; i < str.length; i++) {
-          hex = str.charCodeAt(i).toString(16)
-          result += hex
-        }
-        return result
-      }
-      self.syncDataDB = 'userdb-' + hexEncode(this.syncDataUsername.toLowerCase())
-    },
+  
     async destroyLocal () {
       if (confirm('Please confirm you want to delete the local data. This can not be undone. Continue?')) {
         await ModelsAPI.destroyDB()
@@ -179,12 +143,6 @@ export default {
             'export.db',
             'text/plain'
       )
-    },
-
-    enableSync() {
-      ModelsAPI.enableSync(this.syncDataServer, this.syncDataUsername, this.syncDataPassword, this.syncDataDB)
-      this.syncDataDialog = false
-      settings.syncInProgress = true
     },
 
     download(data, filename, type) {

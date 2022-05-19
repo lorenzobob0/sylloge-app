@@ -301,6 +301,8 @@ export default {
       const globalDB = await ModelsAPI.initDB()
       let rev = self.coin._rev
       let res = null
+      console.log(self.coin)
+      console.log(self.coin._rev)
       res = await globalDB.put(self.coin)
       rev = self.coin._rev = res.rev
 
@@ -309,13 +311,14 @@ export default {
       } else {
         res = await self.removeAttachmentAsync(globalDB, self.coin._id, 'imgObv', rev)
       }
-      rev = res.rev
+      rev = self.coin._rev = res.rev
       if (self.imgRevData != null) {
         res = await globalDB.putAttachment(self.coin._id, 'imgRev', rev, self.imgRevData, 'image/jpeg') 
       } else {
         res = await self.removeAttachmentAsync(globalDB, self.coin._id, 'imgRev', rev)
       }
-      // Salva tutti i documenti
+      rev = self.coin._rev = res.rev
+      
       for (let i = 0; i < self.albums.length; i++) {
         let a = self.albums[i].album
         if (typeof a.coins === 'undefined') {
@@ -350,6 +353,8 @@ export default {
           }
         }
       }
+      console.log(rev)
+
       self.dirty = false
     },
     async deleteRecord () {

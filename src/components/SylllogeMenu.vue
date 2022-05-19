@@ -30,24 +30,51 @@
       <el-menu-item index="4">
         <el-icon><setting /></el-icon> &nbsp; Settings
       </el-menu-item>
-      <el-menu-item index="5">
-        <el-icon><setting /></el-icon> &nbsp; Sync: 
-          <span v-if="syncSettings.syncInProgress">ON</span>
-          <span v-if="!syncSettings.syncInProgress">OFF</span>
-        <div></div>
+      <el-menu-item index="5" @click="syncDataDialog = true">
+        <el-icon><setting /></el-icon> &nbsp; Sync:  {{syllogeSettings.syncStatus}} 
       </el-menu-item>
-      
+       {{syllogeSettings.syncStatus}}
             
     </el-menu>
+
+    <el-dialog
+      v-model="syncDataDialog"
+      title="Data Sync"
+      width="300px"
+    >
+      <span>
+        <b>Experimental feature!</b><br/>
+        Please specify a sync server name, a database name and server credentials.
+      </span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-input v-model="syllogeSettings.syncDataUsername" placeholder="Username" @change="syncDataUpdateDB" />
+          <el-input v-model="syllogeSettings.syncDataPassword" placeholder="Password" type="password" show-password />
+          <el-input v-model="syllogeSettings.syncDataServer" placeholder="Server URL" />
+          <el-input v-model="syllogeSettings.syncDataDB" placeholder="db-name" />
+          <el-button @click="syncDataDialog=false">Cancel</el-button>
+          <el-button type="primary" @click="enableSync">Enable Sync</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { House, Coin, FolderOpened, Setting, ArrowLeft } from '@element-plus/icons-vue'
 import settings from './SyllogeSettings'
+import ModelsAPI from './Models.js'
 
 export default {
   name: "SylllogeMenu",
+  data: function () {
+    return {
+      syllogeSettings: settings(),
+      syncDataDialog: false
+    }
+  },
   components: {
     House, Coin, FolderOpened, Setting, ArrowLeft
   },
@@ -75,8 +102,41 @@ export default {
   */
   methods: {
 
-    syncSettings() {
-      return settings
+    syncDataUpdateDB() {
+      const self = this
+      const hexEncode = function (str) {
+        var hex, i
+        var result = ''
+
+        for (i = 0; i < str.length; i++) {
+          hex = str.charCodeAt(i).toString(16)
+          result += hex
+        }
+        return result
+      }
+      self.syllogeSettings.syncDataDB = 'userdb-' + hexEncode(self.syllogeSettings.syncDataUsername.toLowerCase())
+    },
+
+    enableSync() {
+      const self = this
+      ModelsAPI.enableSync(self.syllogeSettings.syncDataServer, self.syllogeSettings.syncDataUsername, self.syllogeSettings.syncDataPassword, self.syllogeSettings.syncDataDB, {
+        complete: () => {
+          self.syllogeSettings.syncStatus = 'complete'
+        },
+        paused: () => {
+          self.syllogeSettings.syncStatus = 'paused'
+        },
+        denied: () => {
+          self.syllogeSettings.syncStatus = 'denied'
+        },
+        active: () => {
+          self.syllogeSettings.syncStatus = 'active'
+        },
+        error: () => {
+          self.syllogeSettings.syncStatus = 'error'
+        }
+      })
+      this.syncDataDialog = false
     },
 
     currentPath() {

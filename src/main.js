@@ -21,6 +21,8 @@ import './orm.js/lib/persistence.sync.js'
 //import ModelsAPI from './components/Models.js'
 //ModelsAPI.initDB()
 
+import { createPinia } from 'pinia'
+
 import vex from 'vex-js'
 import vexDialog from 'vex-dialog'
 import 'vex-js/dist/css/vex.css'
@@ -32,5 +34,6 @@ vex.registerPlugin(vexDialog)
 const app = createApp(App)
 app.use(ElementPlus)
 app.use(router)
+app.use(createPinia())
 app.mount('#app')
 
