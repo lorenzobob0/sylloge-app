@@ -78,6 +78,7 @@
 import ModelsAPI from './Models.js'
 import axios from 'axios'
 import SylllogeMenu from './SylllogeMenu.vue'
+import settings from './SyllogeSettings'
 
 export default {
   name: 'SettingsView',
@@ -183,6 +184,7 @@ export default {
     enableSync() {
       ModelsAPI.enableSync(this.syncDataServer, this.syncDataUsername, this.syncDataPassword, this.syncDataDB)
       this.syncDataDialog = false
+      settings.syncInProgress = true
     },
 
     download(data, filename, type) {

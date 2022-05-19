@@ -30,6 +30,13 @@
       <el-menu-item index="4">
         <el-icon><setting /></el-icon> &nbsp; Settings
       </el-menu-item>
+      <el-menu-item index="5">
+        <el-icon><setting /></el-icon> &nbsp; Sync: 
+          <span v-if="syncSettings.syncInProgress">ON</span>
+          <span v-if="!syncSettings.syncInProgress">OFF</span>
+        <div></div>
+      </el-menu-item>
+      
             
     </el-menu>
   </div>
@@ -37,6 +44,7 @@
 
 <script>
 import { House, Coin, FolderOpened, Setting, ArrowLeft } from '@element-plus/icons-vue'
+import settings from './SyllogeSettings'
 
 export default {
   name: "SylllogeMenu",
@@ -66,6 +74,11 @@ export default {
   },
   */
   methods: {
+
+    syncSettings() {
+      return settings
+    },
+
     currentPath() {
       return this.$route.path
     },
