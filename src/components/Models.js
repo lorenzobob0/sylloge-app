@@ -78,6 +78,12 @@ function connectionURL(username, password) {
   return remoteURL
 }
 
+function disableSync() {
+  if (syncHandler != null) {
+    syncHandler.cancel()
+  }
+}
+
 function enableSync(server, username, password, db, handlers = {}) {
   const components = server.split('://')
   if (components.length != 2) {
@@ -1220,6 +1226,7 @@ function syncChats(bucket) {
 export default {
   connectionURL: connectionURL,
   enableSync: enableSync,
+  disableSync: disableSync,
   coinToString: coinToString, 
   setupModels: setupModels,
   initDB: initDB,

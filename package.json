@@ -1,6 +1,6 @@
 {
   "name": "sylloge-app-2",
-  "version": "0.1.1",
+  "version": "v0.1.2-alpha",
   "private": false,
   "repository": "github:lorenzobob0/sylloge-app",
   "main": "electron.js",
@@ -83,7 +83,9 @@
   ],
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "assets/icon.icns"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",

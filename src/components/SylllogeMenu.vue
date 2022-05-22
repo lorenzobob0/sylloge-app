@@ -30,11 +30,13 @@
       <el-menu-item index="4">
         <el-icon><setting /></el-icon> &nbsp; Settings
       </el-menu-item>
-      <el-menu-item index="5" @click="syncDataDialog = true">
-        <el-icon><setting /></el-icon> &nbsp; Sync:  {{syllogeSettings.syncStatus}} 
+      <el-menu-item index="5" v-if="syllogeSettings.syncStatus == '' ||  syllogeSettings.syncStatus == 'error'" @click="syncDataDialog = true">
+        <el-icon><cloudy /></el-icon> &nbsp; Enable sync 
       </el-menu-item>
-       {{syllogeSettings.syncStatus}}
-            
+      <el-menu-item index="5" v-if="syllogeSettings.syncStatus != '' && syllogeSettings.syncStatus != 'error' " @click="stopSyncing">
+        <el-icon><cloudy /></el-icon> &nbsp; Disable sync 
+      </el-menu-item>
+                   
     </el-menu>
 
     <el-dialog
@@ -63,7 +65,7 @@
 </template>
 
 <script>
-import { House, Coin, FolderOpened, Setting, ArrowLeft } from '@element-plus/icons-vue'
+import { House, Coin, FolderOpened, Setting, ArrowLeft, Cloudy } from '@element-plus/icons-vue'
 import settings from './SyllogeSettings'
 import ModelsAPI from './Models.js'
 
@@ -76,7 +78,7 @@ export default {
     }
   },
   components: {
-    House, Coin, FolderOpened, Setting, ArrowLeft
+    House, Coin, FolderOpened, Setting, ArrowLeft, Cloudy
   },
   props: {
     homeIndex: Number
@@ -91,15 +93,6 @@ export default {
       return window.history.length > this.$root.historyCount
     }
   },
-  /*
-  mounted: function () {
-    console.log('navbar: ' + this.$router.currentRoute._value.path)
-    console.log(this.$router.currentRoute._value)
-    if (this.$router.currentRoute._value.path == '/') {
-      this.homeIndex = "1"
-    }
-  },
-  */
   methods: {
 
     syncDataUpdateDB() {
@@ -117,7 +110,13 @@ export default {
       self.syllogeSettings.syncDataDB = 'userdb-' + hexEncode(self.syllogeSettings.syncDataUsername.toLowerCase())
     },
 
-    enableSync() {
+    stopSyncing () {
+      const self = this
+      ModelsAPI.disableSync()
+      self.syllogeSettings.syncStatus = ''
+    },
+
+    enableSync () {
       const self = this
       ModelsAPI.enableSync(self.syllogeSettings.syncDataServer, self.syllogeSettings.syncDataUsername, self.syllogeSettings.syncDataPassword, self.syllogeSettings.syncDataDB, {
         complete: () => {

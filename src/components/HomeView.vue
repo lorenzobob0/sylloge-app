@@ -2,6 +2,10 @@
   <div class="home">
     <sylloge-menu :homeIndex="1" />
     <h1>Welcome to Sylloge version {{version}}</h1>
+    <p v-if="updateAvailable">
+      A new update is avialable ({{latestRelease}}). <br/>
+      <a :href="'https://github.com/lorenzobob0/sylloge-app/releases/tag/'+latestRelease" target="_blank">Download page</a>
+    </p>
     <p>
       This is a work-in-progress rewrite and enhancement of 
       SyllogeApp for desktops and mobile devices.
@@ -11,7 +15,7 @@
 
 <script>
 import SylllogeMenu from './SylllogeMenu.vue'
-
+import { checkLatestVersion, syllogeVersion } from './version'
 
 export default {
   name: 'HomeView',
@@ -23,8 +27,19 @@ export default {
   }, 
   data: function () {
     return {
-      version: VERSION
+      version: syllogeVersion(),
+      updateAvailable: false,
+      latestRelease: ''
     }
+  },
+  async mounted() {
+    let v = await checkLatestVersion()
+    if (v > VERSION) {
+      this.updateAvailable = true
+      this.latestRelease = v
+    }
+  },
+  methods: {
   }
 }
 </script>

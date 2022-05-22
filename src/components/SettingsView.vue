@@ -26,9 +26,6 @@
     <p>
         <el-button @click="importLegacyDialog=true" class="setting-btn" type="primary">Import Sylloge-app v.1 legacy data from cloud</el-button>
     </p>
-    <p>
-      <el-button @click="syncDataDialog = true" class="setting-btn" type="success">Enable Sync</el-button>
-    </p>
 
     <el-dialog
         v-model="importLegacyDialog"

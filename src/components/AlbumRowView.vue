@@ -65,12 +65,10 @@ export default {
     const self = this
     let globalDB = await ModelsAPI.initDB()
     
-    console.log(self.album.doc._attachments)
     if (typeof self.album.doc._attachments !== 'undefined' && typeof self.album.doc._attachments.cover !== 'undefined') {
       let atc = await globalDB.getAttachment(self.album._id, 'cover')
       let url = URL.createObjectURL(atc)
       self.cover = url
-      console.log(self.cover)
     }
 
   },

@@ -3,7 +3,11 @@
     <el-main>
       <router-view></router-view>
     </el-main>
-
+    <div id="footer">
+      <span v-if="syllogeSettings.syncStatus != ''" id="sync-status">Sync: {{syllogeSettings.syncStatus}}</span>
+      Sylloge App 2 ({{version}}) 
+      <span v-if="updateAvailable"><a target="_blank" :href="'https://github.com/lorenzobob0/sylloge-app/releases/tag/'+latestRelease">Update available: {{latestRelease}}</a></span>
+    </div>
   </el-container>
 </template>
 
@@ -12,6 +16,8 @@ import HomeView from "./components/HomeView.vue";
 import CoinsView from "./components/CoinsView.vue";
 import { House, Coin, FolderOpened, Setting } from '@element-plus/icons-vue'
 import Models from './components/Models'
+import settings from './components/SyllogeSettings'
+import { checkLatestVersion, syllogeVersion } from './components/version'
 
 export default {
   name: "App",
@@ -20,40 +26,45 @@ export default {
     "coins-view": CoinsView,
     House, Coin, FolderOpened, Setting
   },
+  data: function () {
+    return {
+      version: syllogeVersion(),
+      syllogeSettings: settings(),
+      syncDataDialog: false,
+      updateAvailable: false,
+      latestRelease: ''
+    }
+  },
   created: function () {
     const self = this
     Models.initDB('sylloge-2')
     self.$router.isAuthenticated = true
+    this.checkLatestVersion()
   },
   mounted: function () {
     this.$root.historyCount = window.history.length
+    
   },
   methods: {
-    handleTabClick(idx) {
-      switch (parseInt(idx)) {
-        case 1:
-          this.$router.push("/");
-          break;
-        case 2:
-          this.$router.push("/coins");
-          break;
-        case 3:
-          this.$router.push("/albums");
-          break;
-        case 4:
-          this.$router.push("/settings");
-          break;
-        default:
-          break;
+    async checkLatestVersion () {
+      let v = await checkLatestVersion()
+      if (v != null) {
+        this.updateAvailable = true
+        this.latestRelease = v
       }
-    },
+    }
   },
 };
 </script>
 
 <style>
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  height: 100%;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -61,13 +72,36 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  padding-top: 60px; /* Per navbar */
-  padding-bottom: 60px; /* Per pulsanti eventuali*/
+  padding-top: 60px;
+  height: 100%;
 }
 
+#footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: rgb(0, 0, 0);
+   color: white;
+   text-align: center;
+   font-family: 'Courier New', Courier, monospace;
+   font-size: small;
+   text-align: left;
+   padding-left: 10px;
+}
+#footer a {
+  color:green;
+  font-weight: bold;
+}
+
+#sync-status {
+  float: right;
+  margin-right: 25px;
+}
+
+
 #main-container {
-  display: flex;
-  flex-direction: column;
+  height: 100%;
 }
 
 textarea {
@@ -89,6 +123,5 @@ textarea {
   text-align: right;
   padding: 20px;
 }
-
 
 </style>

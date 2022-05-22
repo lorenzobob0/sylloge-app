@@ -175,8 +175,10 @@ export default {
       let suggestions = []
       for (let i = 0; i < self.rulers.length; i++) {
         let e = self.rulers[i]
-        if (e.toLowerCase().startsWith(queryString)) {
-          suggestions.push({ value: e })
+        if (e != null) {
+          if (e.toLowerCase().startsWith(queryString)) {
+            suggestions.push({ value: e })
+          }
         }
       }
       callBack(suggestions)
@@ -196,7 +198,6 @@ export default {
 
     markDirty() {
       this.dirty = true
-      console.log(this.belongToAlbums)
     },
     async loadMintsEtc () {
       const self = this
@@ -235,7 +236,6 @@ export default {
       })
       self.albums = []
       self.belongToAlbums = []
-      console.log(allAlbums.docs)
       for (let i = 0; i < allAlbums.docs.length; i++) {
         let selected = false
         let a = allAlbums.docs[i]
@@ -291,7 +291,7 @@ export default {
             resolve(result)
           }
         }).catch(function (err) {
-          console.log(err)
+          console.error(err)
           reject(err)
         })
       })
@@ -301,8 +301,6 @@ export default {
       const globalDB = await ModelsAPI.initDB()
       let rev = self.coin._rev
       let res = null
-      console.log(self.coin)
-      console.log(self.coin._rev)
       res = await globalDB.put(self.coin)
       rev = self.coin._rev = res.rev
 
@@ -325,8 +323,7 @@ export default {
           a.coins = []
         }
         if (self.belongToAlbums.indexOf(a._id) >= 0) {
-          console.log('Salva associazione album moneta')
-          console.log(a)
+          // Save album coin associations
           if (a.coins.indexOf(self.coin._id) < 0) {
             a.coins.push(self.coin._id)
             a.lastModified = new Date()
@@ -353,8 +350,6 @@ export default {
           }
         }
       }
-      console.log(rev)
-
       self.dirty = false
     },
     async deleteRecord () {
