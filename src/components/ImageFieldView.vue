@@ -109,6 +109,7 @@ export default {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  
 }
 .img-uploader .el-upload:hover {
   border-style: none;

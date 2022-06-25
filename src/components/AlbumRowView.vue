@@ -4,8 +4,8 @@
     <div v-else class="album-cover image ">
       <i v-if="true" class="el-icon-picture-outline" />
     </div>
-    <el-row :gutter="10">
-      <el-col class="album-desc" :span="20">
+    <el-row :gutter="10" @click="$emit('view', album)">
+      <el-col class="album-desc" :span="22">
         <p class="album-name">
           {{album.doc.name}}
         </p>
@@ -29,10 +29,18 @@
         </el-button>
       </el-col>
       -->
-      <el-col :span="2">
+    </el-row>
+    <el-row>
+      <el-col>
         <el-button type="success" circle @click="$emit('view', album)">
           <el-icon><folder-opened /></el-icon>
         </el-button>
+
+        <el-button circle @click="$emit('export', album)">
+          <el-icon><folder-opened /></el-icon>
+        </el-button>
+
+
       </el-col>
 
     </el-row>
@@ -77,6 +85,9 @@ export default {
   },
   computed: {
     elapsedTimeSinceLastEdit () {
+      if (typeof this.album.doc.lastModified === 'undefined') {
+        return 'never'
+      }
       return moment(this.album.doc.lastModified).startOf().fromNow()
     }
   }

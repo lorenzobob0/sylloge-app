@@ -267,6 +267,7 @@ export default {
         }
       }
 
+
       if (typeof self.album.coins != 'undefined') {
         for (let j = 0; j < self.album.coins.length; j++) {
           if (typeof self.album.coins[j] !== 'string') {
@@ -287,6 +288,7 @@ export default {
         }
       }
 
+      self.album.lastModified = new Date()
       let res = await globalDB.put(self.album)
       self.album._rev = res.rev
       self.dirty = false

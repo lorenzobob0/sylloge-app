@@ -57,11 +57,13 @@ function __is_def(f) {
 
 function coinToString(coin) {
   var d = '';
+  if (__is_def(coin.code)) d += '#' + coin.code + '.';
   if (coin.ruler != '' && coin.ruler != null) d += ' ' + coin.ruler + '.';
   d += coin.coinType + '.';
   if (__is_def(coin.mint)) d += ' ' + coin.mint + '.';
   if (__is_def(coin.obverse)) d += ' Obv: ' + coin.obverse + '.';
   if (__is_def(coin.reverse)) d += ' Rev: ' + coin.reverse + '.';
+  if (__is_def(coin.opus)) d += ' Opus: ' + coin.opus + '.';
   if (__is_def(coin.biblio)) d += ' ' + coin.biblio + '.';
   if (__is_def(coin.metal)) d += ' ' + coin.metal + '.';
   if (__is_def(coin.weight)) d += ' ' + coin.weight + '.';

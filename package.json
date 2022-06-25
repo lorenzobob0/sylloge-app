@@ -1,6 +1,6 @@
 {
   "name": "sylloge-app-2",
-  "version": "v0.1.2-alpha",
+  "version": "v0.1.3-alpha",
   "private": false,
   "repository": "github:lorenzobob0/sylloge-app",
   "main": "electron.js",
@@ -23,6 +23,7 @@
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
+    "path": "^0.12.7",
     "pinia": "^2.0.14",
     "pouchdb": "^7.2.2",
     "pouchdb-find": "^7.2.2",

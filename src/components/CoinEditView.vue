@@ -18,10 +18,10 @@
         </el-form-item>
 
         <el-row class="form-element" style="text-align:center">
-          <el-col id="row-imgs" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <el-col class="row-imgs" :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
             <image-field-view :img="imgObv" @changed="updateImageObv" />
           </el-col>
-          <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <el-col class="row-imgs" :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
             <image-field-view :img="imgRev" @changed="updateImageRev" />
           </el-col>
         </el-row>
@@ -61,6 +61,11 @@
         <el-form-item label="Weight:">
         <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Weight" v-model="coin.weight"></el-input>
         </el-form-item>
+
+        <el-form-item label="Opus:">
+        <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Biblio" v-model="coin.opus"></el-input>
+        </el-form-item>
+
 
         <el-form-item label="Metal:">
         <el-input @keypress="markDirty()" @change="markDirty()" placeholder="Metal" v-model="coin.metal"></el-input>
@@ -390,12 +395,7 @@ export default {
 <style scoped>
 
 
-.coin-desc {
-  text-align: left;
-}
-
-
-#row-imgs {
+.row-imgs {
   padding-bottom: 5px;
   display: flex;
   justify-content: center;

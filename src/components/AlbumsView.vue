@@ -22,7 +22,7 @@
     </div>
     <el-empty v-if="albums.length == 0" description="No results" />
     <draggable class="albums-container dragArea list-group w-full" :list="albums" @change="persistOrder">
-      <album-row-view v-for="album in albums" class="album" :key="album.id" :album="album" @edit="editAlbum(album)" @view="viewAlbum(album)" ></album-row-view>
+      <album-row-view v-for="album in albums" class="album" :key="album.id" :album="album" @edit="editAlbum(album)" @export="exportAlbum(album)" @view="viewAlbum(album)" ></album-row-view>
     </draggable>  
   </div>
 </template>
@@ -52,6 +52,37 @@ export default {
     this.fetchAlbums()
   },
   methods: {
+
+    async exportAlbum(album) {
+      console.log(album)
+      return
+      let globalDB = await ModelsAPI.initDB()
+      let doc = await globalDB.allDocs({include_docs: true, attachments: true})
+      this.download(
+            JSON.stringify(doc.rows.map(({doc}) => doc)),
+            'export.db',
+            'text/plain'
+      )
+    },
+
+    download(data, filename, type) {
+      var file = new Blob([data], {type: type})
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename)
+      else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file)
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        setTimeout(function() {
+            document.body.removeChild(a)
+            window.URL.revokeObjectURL(url)
+        }, 0)
+      }
+    },
+
     async fetchAlbums () {
       const self = this
       let globalDB = await ModelsAPI.initDB()

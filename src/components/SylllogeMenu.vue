@@ -46,7 +46,7 @@
     >
       <span>
         <b>Experimental feature!</b><br/>
-        Please specify a sync server name, a database name and server credentials.
+        Please specify a CouchDB server address, a database name and server credentials.
       </span>
       <template #footer>
         <span class="dialog-footer">
@@ -54,6 +54,8 @@
           <el-input v-model="syllogeSettings.syncDataPassword" placeholder="Password" type="password" show-password />
           <el-input v-model="syllogeSettings.syncDataServer" placeholder="Server URL" />
           <el-input v-model="syllogeSettings.syncDataDB" placeholder="db-name" />
+          <el-checkbox v-model="syllogeSettings.autoActivate" label="Autostart"/>
+          <el-checkbox v-model="syllogeSettings.saveSyncStatus" label="Save settings"/>
           <el-button @click="syncDataDialog=false">Cancel</el-button>
           <el-button type="primary" @click="enableSync">Enable Sync</el-button
           >
@@ -114,10 +116,17 @@ export default {
       const self = this
       ModelsAPI.disableSync()
       self.syllogeSettings.syncStatus = ''
+      self.syllogeSettings.autoActivate = false
+      if (self.syllogeSettings.saveSyncStatus) {
+        self.syllogeSettings.makePersistent()
+      }
     },
 
     enableSync () {
       const self = this
+      if (self.syllogeSettings.saveSyncStatus) {
+        self.syllogeSettings.makePersistent()
+      }
       ModelsAPI.enableSync(self.syllogeSettings.syncDataServer, self.syllogeSettings.syncDataUsername, self.syllogeSettings.syncDataPassword, self.syllogeSettings.syncDataDB, {
         complete: () => {
           self.syllogeSettings.syncStatus = 'complete'
