@@ -1,6 +1,6 @@
 {
   "name": "sylloge-app-2",
-  "version": "v0.1.3-alpha",
+  "version": "v0.1.4",
   "private": false,
   "repository": "github:lorenzobob0/sylloge-app",
   "main": "electron.js",
